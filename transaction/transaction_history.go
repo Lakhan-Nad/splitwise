@@ -1,8 +1,9 @@
 package transaction
 
 // UserTransactionHistory is a struct that represents a transaction
-// a negative amount means a debit transaction
-// a positive amount means a credit transaction
+// a negative amount means a debit transaction for single user tx
+// a positive amount means a credit transaction for single user tx
+// for 2 users tx amount should always be positive
 type TransactHistory struct {
 	refId  string
 	payer  string

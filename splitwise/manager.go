@@ -19,7 +19,13 @@ func (se *SplitExpense) Validate() (bool, error) {
 	if se.amount < 0 {
 		return false, fmt.Errorf("cannot split negative amount")
 	}
-
+	totalContribution := 0.0
+	for _, e := range se.contributions {
+		totalContribution += e.Amount()
+	}
+	if totalContribution != se.amount {
+		return false, fmt.Errorf("total contribution amount does not match expense amount")
+	}
 	ok, err := se.strategy.ValidateSplits(se.amount, se.splits)
 	if !ok {
 		return false, err
