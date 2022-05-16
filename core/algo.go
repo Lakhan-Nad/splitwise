@@ -12,6 +12,9 @@ func MinimizePayables(payables []*Payable) ([]*Payable, error) {
 	// Convert payables to map
 	m := map[string]float64{}
 	for _, p := range payables {
+		if p.Amount < 0 {
+			return nil, fmt.Errorf("amount must be positive")
+		}
 		m[p.PayerId] -= p.Amount
 		m[p.PayeeId] += p.Amount
 	}
@@ -71,7 +74,7 @@ func getPayables(refMap map[string]float64) ([]*Payable, error) {
 		p := &Payable{}
 		p.PayerId = heap.Pop(&usersPayer).(string)
 		p.PayeeId = heap.Pop(&usersPayee).(string)
-		p.Amount = math.Max(math.Abs(refMap[p.PayerId]), refMap[p.PayeeId])
+		p.Amount = math.Min(math.Abs(refMap[p.PayerId]), refMap[p.PayeeId])
 		refMap[p.PayerId] += p.Amount
 		refMap[p.PayeeId] -= p.Amount
 		if refMap[p.PayerId] != 0 {
