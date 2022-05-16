@@ -13,8 +13,9 @@ func UseSplitStrategy(strategy SplitStrategy, totalAmount float64, splits []*Spl
 	if !valid {
 		return err
 	}
-	strategy.CalculateShare(totalAmount, splits)
-	for _, split := range splits {
+	shares := strategy.CalculateShare(totalAmount, splits)
+	for idx, split := range splits {
+		split.share = shares[idx]
 		split.strategyName = strategy.Name()
 		split.total = totalAmount
 	}
