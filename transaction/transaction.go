@@ -7,8 +7,9 @@ import (
 )
 
 var (
-	idDivider    = "@TxId"
-	revIdDivider = "@Rev"
+	idDivider      = "@TxId"
+	revIdDivider   = "@Rev"
+	defaultAccount = "sudo@admin"
 )
 
 // Here amount cannot be negative, bcoz 2 parties are involved
@@ -38,23 +39,7 @@ func New(payee, payer string, amount float64, refId string) (*TransactHistory, e
 
 	transact.desc = transact.getDesc()
 
-	// create reverse for accounting
-	revTransact := TransactHistory{
-		id:     getId(payee, true, uint32(getRevTxsCount(payee))),
-		amount: amount,
-		payer:  payer,
-		payee:  payee,
-		rev:    true,
-		refId:  refId,
-	}
-
-	revTransact.desc = revTransact.getDesc()
-
-	// update payer map
-	addPayerTx(payer, &transact)
-
-	// update payee map
-	addPayeeTx(payee, &revTransact)
+	addTx(&transact)
 
 	// return by value isn't
 	// necessary because user can't
@@ -131,14 +116,14 @@ func newIndividualTx(userId string, amount float64, refId string) (*TransactHist
 	tx := TransactHistory{
 		id:     getId(userId, false, uint32(getUserTxsCount(userId))),
 		amount: amount,
-		payee:  "",
+		payee:  defaultAccount,
 		rev:    false,
 		payer:  userId,
 		refId:  refId,
 	}
 
 	// update payer map
-	addPayerTx(userId, &tx)
+	addTx(&tx)
 
 	return &tx, nil
 }
@@ -154,4 +139,24 @@ func (t *TransactHistory) getDesc() string {
 		return fmt.Sprint(t.payee, " received ", t.amount)
 	}
 	return fmt.Sprint("invalid transaction of value ", t.amount)
+}
+
+func addTx(tx *TransactHistory) {
+	// create reverse for accounting
+	revTransact := TransactHistory{
+		id:     getId(tx.payee, true, uint32(getRevTxsCount(tx.payee))),
+		amount: tx.amount,
+		payer:  tx.payer,
+		payee:  tx.payee,
+		rev:    true,
+		refId:  tx.refId,
+	}
+
+	revTransact.desc = revTransact.getDesc()
+
+	// update payer map
+	addActualTx(tx)
+
+	// update payee map
+	addAccountingTx(&revTransact)
 }

@@ -23,16 +23,16 @@ var getTxsOfPayee = func(payeeId string) []TransactHistory {
 	return val
 }
 
-var addPayerTx = func(payerId string, tx *TransactHistory) {
-	txs := getTxsOfPayer(payerId)
+var addActualTx = func(tx *TransactHistory) {
+	txs := getTxsOfPayer(tx.payer)
 	txs = append(txs, *tx)
-	txMap[payerId] = txs
+	txMap[tx.payer] = txs
 }
 
-var addPayeeTx = func(payeeId string, tx *TransactHistory) {
-	txs := getTxsOfPayee(payeeId)
+var addAccountingTx = func(tx *TransactHistory) {
+	txs := getTxsOfPayee(tx.payee)
 	txs = append(txs, *tx)
-	revTxMap[payeeId] = txs
+	revTxMap[tx.payee] = txs
 }
 
 var getUserTxsCount = func(userId string) int {

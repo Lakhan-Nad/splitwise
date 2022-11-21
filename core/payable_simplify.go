@@ -20,7 +20,7 @@ func sanitizeAndCheckPayables(payables []*Payable) (bool, error) {
 			return false, fmt.Errorf("amount must be positive")
 		}
 		if p.PayeeId == "" || p.PayerId == "" {
-			return false, fmt.Errorf("userId is empty")
+			return false, fmt.Errorf("payer or payee id is empty")
 		}
 	}
 	return true, nil

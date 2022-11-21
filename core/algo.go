@@ -22,14 +22,14 @@ func MinimizePayables(payables []*Payable) ([]*Payable, error) {
 func GetPayablesFromBalanceAccounts(bal []*BalanceAccount) ([]*Payable, error) {
 	balances := make([]BalanceAccount, 0)
 	for _, b := range bal {
-		if b.UserId == "" {
+		if b.AccountId == "" {
 			return nil, fmt.Errorf("userId is empty")
 		}
 		if b.Amount != 0 {
 			balances = append(balances, *b)
 		}
 	}
-	return UseBalanceMapSimplifyToPayableStrategy(balances, &CashFlowMinimiseStrategy{})
+	return UseBalanceMapSimplifyToPayableStrategy(balances, &HeapCashFlowMinimiseStrategy{})
 }
 
 func GetPayablesFromMap(m map[string]float64) ([]*Payable, error) {
@@ -40,10 +40,10 @@ func GetPayablesFromMap(m map[string]float64) ([]*Payable, error) {
 		}
 		if v != 0 {
 			balances = append(balances, BalanceAccount{
-				UserId: k,
-				Amount: v,
+				AccountId: k,
+				Amount:    v,
 			})
 		}
 	}
-	return UseBalanceMapSimplifyToPayableStrategy(balances, &CashFlowMinimiseStrategy{})
+	return UseBalanceMapSimplifyToPayableStrategy(balances, &HeapCashFlowMinimiseStrategy{})
 }
